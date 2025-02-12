@@ -1,53 +1,30 @@
-// ProductList.mjs
+export default class ProductList {
+  constructor(category, dataSource, listElement) {
+    this.category = category;
+    this.dataSource = dataSource;
+    this.listElement = listElement;
+  }
 
-// Function to generate the HTML for a product card
-function productCardTemplate(product) {
+  async init() {
+    const list = await this.dataSource.getData();
+    this.renderList(list);
+  }
+
+  renderList(list) {
+    const htmlStrings = list.map(this.productCardTemplate).join('');
+    this.listElement.innerHTML = htmlStrings;
+  }
+
+  productCardTemplate(product) {
     return `
-      <div class="product-card">
-        <img src="${product.image}" alt="${product.name}">
-        <h3>${product.name}</h3>
-        <p>${product.description}</p>
-        <p>$${product.price}</p>
-      </div>
+      <li class="product-card">
+        <a href="product_pages/index.html?product=${product.Id}">
+          <img src="${product.Image}" alt="${product.Name}" />
+          <h3 class="card__brand">${product.Brand}</h3>
+          <h2 class="card__name">${product.Name}</h2>
+          <p class="product-card__price">$${product.Price.toFixed(2)}</p>
+        </a>
+      </li>
     `;
   }
-  
-  // Class to handle product listing
-  class ProductListing {
-    constructor(category, dataSource, listElement) {
-      this.category = category;
-      this.dataSource = dataSource;
-      this.listElement = listElement;
-    }
-  
-    // Initialize the product listing
-    init() {
-      this.getData();
-    }
-  
-    // Fetch data and render the list of products
-    async getData() {
-      try {
-        const response = await fetch(this.dataSource);
-        const products = await response.json();
-        const filteredProducts = this.filterProducts(products);
-        this.renderList(filteredProducts);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    }
-  
-    // Render the list of products
-    renderList(products) {
-      const htmlStrings = products.map(product => productCardTemplate(product));
-      this.listElement.innerHTML = htmlStrings.join('');
-    }
-  
-    // Filter products, here we show the first 4
-    filterProducts(products) {
-      return products.slice(0, 4); // Show only the first 4 products
-    }
-  }
-  
-  export default ProductListing;
-  
+}

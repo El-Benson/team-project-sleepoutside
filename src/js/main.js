@@ -30,13 +30,22 @@ function displayProducts(products) {
 displayProducts(products);
 // main.js
 
-import ProductListing from './ProductList.mjs'; // Import the ProductListing class
+import ProductList from './ProductList.mjs';
 
-// Select the element where the products will be displayed
-const listElement = document.querySelector('#product-list');
-
-// Create a new ProductListing instance and initialize it
-const productList = new ProductListing('Tents', './data/tents.json', listElement);
+const listElement = document.querySelector('.product-list');
+const productList = new ProductList('tents', productData, listElement);
 productList.init();
+
 import { loadHeaderFooter } from './utils.mjs';
 loadHeaderFooter();
+
+import productData from '../public/json/tents.json';
+filterProducts(list, ids) {
+    return list.filter(product => ids.includes(product.Id));
+  }
+  async init() {
+    const list = await this.dataSource.getData();
+    const filteredList = this.filterProducts(list, ['880RR', '985RF', '985PR', '344YJ']);
+    this.renderList(filteredList);
+  }
+  
